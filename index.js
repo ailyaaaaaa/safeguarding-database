@@ -31,6 +31,6 @@ const apiRoutes = require('./routes/api')(pool); // Pass the pool to the routes
 app.use('/api', apiRoutes);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
