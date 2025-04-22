@@ -18,6 +18,41 @@ module.exports = (db) => {
     });
   });
 
+  // Show nearby crimes
+  router.get('/nearby', function (req, res) {
+    const { lat, lng, size } = req.query;
+  
+    if (!lat || !lng || !size) {
+      return res.status(400).json({ error: "Missing lat, lng or size" });
+    }
+  
+    const R = 6378137; // Radius of Earth in meters
+    const d = size / 2; // Half the square size
+  
+    const latRad = lat * Math.PI / 180;
+    const dLat = d / R;
+    const dLon = d / (R * Math.cos(latRad));
+  
+    const north = parseFloat(lat) + (dLat * 180 / Math.PI);
+    const south = parseFloat(lat) - (dLat * 180 / Math.PI);
+    const east = parseFloat(lng) + (dLon * 180 / Math.PI);
+    const west = parseFloat(lng) - (dLon * 180 / Math.PI);
+  
+    const query = `
+      SELECT * FROM crime_reports
+      WHERE latitude BETWEEN ? AND ?
+      AND longitude BETWEEN ? AND ?
+    `;
+  
+    db.query(query, [south, north, west, east], (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('Database error');
+      }
+      res.json(results);
+    });
+  });  
+
   // POST route: Receives a new crime report submission with validation
   router.get('/report', [
     check('crime_type').trim().notEmpty().withMessage('crime_type is required'),
