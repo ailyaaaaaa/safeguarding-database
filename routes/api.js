@@ -1,13 +1,13 @@
 const express = require("express");
 const { check, validationResult } = require('express-validator');
 
-module.exports = (pool) => {
+module.exports = (db) => {
   const router = express.Router();
 
   // GET route: Retrieves all crime reports from the crime_reports table
   router.get('/', function (req, res, next) {
     const sqlquery = "SELECT * FROM crime_reports";
-    pool.query(sqlquery, (err, result) => {
+    db.query(sqlquery, (err, result) => {
       if (err) {
         next(err);
         return res.json(err);
@@ -33,7 +33,7 @@ module.exports = (pool) => {
     const { crime_type, latitude, longitude, description, date_time } = req.body;
     const query = 'INSERT INTO crime_reports (crime_type, latitude, longitude, description, report_time) VALUES (?, ?, ?, ?, ?)';
     
-    pool.query(query, [crime_type, latitude, longitude, description, date_time], (err, result) => {
+    db.query(query, [crime_type, latitude, longitude, description, date_time], (err, result) => {
       if (err) {
         console.error('Error inserting data:', err);
         res.status(500).send('Error saving report');

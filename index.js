@@ -4,14 +4,11 @@ const mysql = require('mysql2');
 const app = express();
 app.use(express.json());
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'safeguarding_app',
-  password: process.env.DB_PASSWORD || 'qwertyuiop',
-  database: process.env.DB_NAME || 'userreports',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+const db = mysql.createConnection({
+  host: '127.0.0.1',
+  user: 'safeguarding_app',
+  password: 'qwertyuiop',
+  database: 'userreports'
 });
 
 // Tell Express that we want to use EJS as the templating engine
@@ -27,7 +24,7 @@ app.use(express.static(__dirname + '/public'));
 const mainRoutes = require("./routes/main");
 app.use('/', mainRoutes);
 
-const apiRoutes = require('./routes/api')(pool); // Pass the pool to the routes
+const apiRoutes = require('./routes/api')(db);
 app.use('/api', apiRoutes);
 
 const PORT = process.env.PORT || 3000;
