@@ -1,5 +1,6 @@
 const express = require("express");
 const { check, validationResult } = require('express-validator');
+const moment = require('moment');
 
 module.exports = (db) => {
   const router = express.Router();
@@ -31,9 +32,13 @@ module.exports = (db) => {
     }
   
     const { crime_type, latitude, longitude, description, date_time } = req.query;
+    
+    // Convert ISO 8601 date to MySQL DATETIME format
+    const formattedDateTime = moment(date_time).format('YYYY-MM-DD HH:mm:ss');
+  
     const query = 'INSERT INTO crime_reports (crime_type, latitude, longitude, description, report_time) VALUES (?, ?, ?, ?, ?)';
     
-    db.query(query, [crime_type, latitude, longitude, description, date_time], (err, result) => {
+    db.query(query, [crime_type, latitude, longitude, description, formattedDateTime], (err, result) => {
       if (err) {
         console.error('Error inserting data:', err);
         res.status(500).send('Error saving report');
