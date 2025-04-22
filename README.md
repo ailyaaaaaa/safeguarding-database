@@ -8,3 +8,4 @@ npm install express-validator
 npm install ejs
 npm install request
 npm install
+npm install cors

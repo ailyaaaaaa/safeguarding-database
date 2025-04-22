@@ -18,7 +18,7 @@ module.exports = (db) => {
   });
 
   // POST route: Receives a new crime report submission with validation
-  router.post('/report', [
+  router.get('/report', [
     check('crime_type').trim().notEmpty().withMessage('crime_type is required'),
     check('latitude').isFloat({ min: -90, max: 90 }).withMessage('latitude must be between -90 and 90'),
     check('longitude').isFloat({ min: -180, max: 180 }).withMessage('longitude must be between -180 and 180'),
@@ -29,8 +29,8 @@ module.exports = (db) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
-    const { crime_type, latitude, longitude, description, date_time } = req.body;
+  
+    const { crime_type, latitude, longitude, description, date_time } = req.query;
     const query = 'INSERT INTO crime_reports (crime_type, latitude, longitude, description, report_time) VALUES (?, ?, ?, ?, ?)';
     
     db.query(query, [crime_type, latitude, longitude, description, date_time], (err, result) => {
